@@ -1,0 +1,13 @@
+--- ModSecurity/headers/modsecurity/transaction.h	2024-05-17 14:55:51.926234822 +0900
++++ transaction.h	2024-05-18 14:31:20.181979753 +0900
+@@ -724,6 +718,10 @@
+ /** @ingroup ModSecurity_C_API */
+ int msc_update_status_code(Transaction *transaction, int status);
+ 
++/* Refer to "https://github.com/owasp-modsecurity/ModSecurity/pull/2620/commits/3fc5918c7a10f3e57327a1d858e9f31faba8a703" */
++/** @ingroup ModSecurity_C_API */
++const char *msc_get_transaction_variable(Transaction *transaction, const char *var_name);
++
+ #ifdef __cplusplus
+ }
+ }  // namespace modsecurity

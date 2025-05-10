@@ -1,0 +1,23 @@
+[req]
+default_bits                   = 2048
+default_md                     = sha256
+default_keyfile                = pg-proxy-rootCA.key
+distinguished_name             = req_distinguished_name
+x509_extensions                = v3_ca
+req_extensions                 = v3_ca
+prompt                         = no
+
+[req_distinguished_name]
+countryName                    = KR
+stateOrProvinceName            = Seoul
+localityName                   = Seoul
+organizationName               = PacketGo Service
+organizationalUnitName         = Pribit Dev
+commonName                     = PacketGo.Proxy.Root.CA
+
+[v3_ca]
+basicConstraints               = critical, CA:TRUE
+subjectKeyIdentifier           = hash
+keyUsage                       = critical, digitalSignature, keyCertSign, cRLSign
+extendedKeyUsage               = serverAuth, clientAuth
+

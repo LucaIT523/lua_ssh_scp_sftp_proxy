@@ -1,0 +1,21 @@
+--- openresty-1.21.4.3/bundle/lua-resty-redis-0.30/lib/resty/redis.lua	2023-11-12 14:29:10.620267996 +0900
++++ redis.lua	2023-11-12 14:31:14.126548270 +0900
+@@ -339,6 +339,18 @@
+ local function _do_cmd(self, ...)
+     local args = {...}
+ 
++    -- refer to : https://github.com/openresty/lua-resty-redis/pull/167/files
++    -- added by maxmin@pribit.com
++    ---@authov Victor Burre <victor.burre@gmail.com>
++    -- It is a workaround for invocking dot-separated commands
++    -- of Redis modules like RedisJSON, rediSQL, etc. In order to
++    -- properly call such command, just substitute 'dot' with 'underscore'.
++    -- Example:
++    --   redis:json_set("key", ".", "{}"
++    --   redis:json_get("key")
++    -- Below we just swap they backward.
++    args[1] = args[1]:gsub("_", ".")
++
+     local sock = rawget(self, "_sock")
+     if not sock then
+         return nil, "not initialized"

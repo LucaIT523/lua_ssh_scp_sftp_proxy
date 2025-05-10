@@ -1,0 +1,115 @@
+=encoding utf-8
+
+
+=head1 Name
+
+
+governance - NGINX Open Source Governance
+
+
+=head1
+
+
+
+Open source changed the world.
+
+
+
+
+
+NGINX is proud to be part of that change, from our very beginning.
+
+
+
+
+
+NGINX embraces open source ethos and intends to remain an active contributor
+and leader in the ecosystem.
+This is encapsulated by our Core Commitments and Principles, which serve to
+help the longevity, transparency, and impact of our open source projects.
+
+
+
+
+=head1 Our Core Commitments
+
+
+=over
+
+
+
+
+=item *
+
+We will be open, consistent, transparent, and fair in our acceptance of
+contributions.
+
+
+
+=item *
+
+We will continue to enhance existing active projects.
+
+
+
+=item *
+
+We will release new projects that move technology forward.
+
+
+
+=item *
+
+We will continue to offer projects under OSI-approved software licenses.
+
+
+
+=item *
+
+We will not remove and commercialize existing projects or features.
+
+
+
+=item *
+
+We will not impose limits on the use of our projects.
+
+
+
+=back
+
+
+
+
+=head1 NGINX Open Source Principles
+
+
+=over
+
+
+
+
+=item *
+
+All contributions are reviewed by the technical committee for that project.
+
+
+
+=item *
+
+Our contribution review discussions are available and publicly viewable to
+provide transparency.
+
+
+
+=item *
+
+Project roadmaps are public and future direction is discussed in the open.
+
+
+
+=back
+
+
+
+

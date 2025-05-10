@@ -1,0 +1,631 @@
+=encoding utf-8
+
+=head1 NAME
+
+ngx_mgmt_module - Module ngx_mgmt_module
+
+
+
+
+=head1
+
+
+
+The C<ngx_mgmt_module> module enables reporting of
+current nginx installation to
+L<NGINX
+Management Suite Instance Manager|https://docs.nginx.com/nginx-management-suite/about/> (1.25.3).
+By default, nginx sends usage info
+to the Instance Manager located at C<nginx-mgmt.local>
+every 30 minutes using the SSL connection.
+The system resolver is used unless
+a custom resolver is configured
+and is invoked only once when the
+configuration is L<loaded|beginners_guide>.
+
+
+
+
+
+
+B<NOTE>
+
+This module is available as part of our
+commercial subscription.
+
+
+
+
+
+=head1 Example Configuration
+
+
+
+
+    
+    mgmt {
+        usage_report endpoint=nginx-mgmt.local interval=30m;
+        resolver     DNS_IP;
+    
+        uuid_file /var/lib/nginx/nginx.id;
+    
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers   DEFAULT;
+    
+        ssl_certificate     client_cert.pem;
+        ssl_certificate_key client_cert.key;
+    
+        # configure server certificate verification
+        # to validate the authenticity of NMS
+        ssl_trusted_certificate  trusted_ca_cert.crt;
+        ssl_verify               on;
+        ssl_verify_depth         2;
+    }
+
+
+
+
+
+
+=head1 Directives
+
+=head2 connect_timeout
+
+
+B<syntax:> connect_timeout I<I<C<time>>>
+
+
+B<default:> I<15s>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Defines a timeout for establishing a connection with the Instance Manager.
+
+
+
+
+
+
+
+=head2 mgmt
+
+
+mgmt { B<...> }
+
+
+
+B<context:> I<main>
+
+
+
+
+
+Provides the configuration file context
+in which the management server directives are specified.
+
+
+
+
+
+
+
+=head2 read_timeout
+
+
+B<syntax:> read_timeout I<I<C<time>>>
+
+
+B<default:> I<60s>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Defines a timeout for reading a response from the Instance Manager.
+The timeout is set only between two successive read operations,
+not for the transmission of the whole response.
+If the Instance Manager does not transmit anything within this time,
+the connection is closed.
+
+
+
+
+
+
+
+=head2 resolver
+
+
+B<syntax:> resolver I<
+    I<C<address>> ...
+    [C<valid>=I<C<time>>]
+    [C<ipv4>=C<on>E<verbar>C<off>]
+    [C<ipv6>=C<on>E<verbar>C<off>]
+    [C<status_zone>=I<C<zone>>]>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Configures name servers used to resolve names of the Instance Manager
+into addresses, for example:
+
+    
+    resolver 127.0.0.1 [::1]:5353;
+
+
+The address can be specified as a domain name or IP address,
+with an optional port.
+If port is not specified, the port 53 is used.
+Name servers are queried in a round-robin fashion.
+
+
+
+
+
+By default, nginx will look up both IPv4 and IPv6 addresses while resolving.
+If looking up of IPv4 or IPv6 addresses is not desired,
+the C<ipv4=off> or
+the C<ipv6=off> parameter can be specified.
+
+
+
+
+
+By default, nginx caches answers using the TTL value of a response.
+An optional C<valid> parameter allows overriding it:
+
+    
+    resolver 127.0.0.1 [::1]:5353 valid=30s;
+
+
+
+B<NOTE>
+
+To prevent DNS spoofing, it is recommended
+configuring DNS servers in a properly secured trusted local network.
+
+
+
+
+
+
+The optional C<status_zone> parameter
+enables
+L<collection|ngx_http_api_module>
+of DNS server statistics of requests and responses
+in the specified I<C<zone>>.
+
+
+
+
+
+
+
+=head2 resolver_timeout
+
+
+B<syntax:> resolver_timeout I<I<C<time>>>
+
+
+B<default:> I<30s>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Sets a timeout for name resolution.
+
+
+
+
+
+
+
+=head2 send_timeout
+
+
+B<syntax:> send_timeout I<I<C<time>>>
+
+
+B<default:> I<60s>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Sets a timeout for transmitting a request to the Instance Manager.
+The timeout is set only between two successive write operations,
+not for the transmission of the whole request.
+If the Instance Manager does not receive anything within this time,
+the connection is closed.
+
+
+
+
+
+
+
+=head2 ssl
+
+
+B<syntax:> ssl I<C<on> E<verbar> C<off>>
+
+
+B<default:> I<on>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Enables the HTTPS protocol for all
+connections to the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_certificate
+
+
+B<syntax:> ssl_certificate I<I<C<file>>>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> with the certificate in the PEM format
+used for authentication to the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_certificate_key
+
+
+B<syntax:> ssl_certificate_key I<I<C<file>>>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> with the secret key in the PEM format
+used for authentication to the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_ciphers
+
+
+B<syntax:> ssl_ciphers I<I<C<ciphers>>>
+
+
+B<default:> I<DEFAULT>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies the enabled ciphers for requests to the Instance Manager.
+The ciphers are specified in the format understood by the OpenSSL library.
+
+
+
+
+
+The full list can be viewed using the
+“C<openssl ciphers>” command.
+
+
+
+
+
+
+
+=head2 ssl_crl
+
+
+B<syntax:> ssl_crl I<I<C<file>>>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> with revoked certificates (CRL)
+in the PEM format used to verify
+the certificate of the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_name
+
+
+B<syntax:> ssl_name I<I<C<name>>>
+
+
+B<default:> I<ssl_name host>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Allows overriding the server name used to
+verify
+the certificate of the Instance Manager and to be
+passed through SNI
+when establishing a connection with the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_password_file
+
+
+B<syntax:> ssl_password_file I<I<C<file>>>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> with passphrases for
+secret keys
+where each passphrase is specified on a separate line.
+Passphrases are tried in turn when loading the key.
+
+
+
+
+
+
+
+=head2 ssl_protocols
+
+
+B<syntax:> ssl_protocols I<
+    [C<SSLv2>]
+    [C<SSLv3>]
+    [C<TLSv1>]
+    [C<TLSv1.1>]
+    [C<TLSv1.2>]
+    [C<TLSv1.3>]>
+
+
+B<default:> I<TLSv1 TLSv1.1 TLSv1.2 TLSv1.3>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Enables the specified protocols for requests to the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_server_name
+
+
+B<syntax:> ssl_server_name I<C<on> E<verbar> C<off>>
+
+
+B<default:> I<off>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Enables or disables passing of the server name through
+L<TLS
+Server Name Indication extension|http://en.wikipedia.org/wiki/Server_Name_Indication> (SNI, RFC 6066)
+when establishing a connection with the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_trusted_certificate
+
+
+B<syntax:> ssl_trusted_certificate I<I<C<file>>>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> with trusted CA certificates in the PEM format
+used to verify
+the certificate of the Instance Manager.
+
+
+
+
+
+
+
+=head2 ssl_verify
+
+
+B<syntax:> ssl_verify I<C<on> E<verbar> C<off>>
+
+
+B<default:> I<off>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Enables or disables verification of the Instance Manager certificate.
+
+
+
+
+
+
+
+=head2 ssl_verify_depth
+
+
+B<syntax:> ssl_verify_depth I<I<C<number>>>
+
+
+B<default:> I<1>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Sets the verification depth in the Instance Manager certificates chain.
+
+
+
+
+
+
+
+=head2 usage_report
+
+
+B<syntax:> usage_report I< [C<endpoint>=I<C<address>>]
+         [C<interval>=I<C<time>>]>
+
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Sets the I<C<address>> and I<C<port>> for IP,
+or the I<C<path>> for a UNIX-domain socket on which
+the Instance Manager is installed,
+by default C<nginx-mgmt.local>.
+The C<interval> sets an interval between reports
+to the Instance Manager, by default 30m.
+
+
+
+
+
+
+
+=head2 uuid_file
+
+
+B<syntax:> uuid_file I<I<C<file>>>
+
+
+B<default:> I<logsE<sol>uuid>
+
+
+B<context:> I<mgmt>
+
+
+
+
+
+Specifies a I<C<file>> that keeps the ID of nginx instance.
+
+
+
+
+
+Examples:
+
+    
+    uuid_file /var/lib/nginx/nginx.id; # path for Linux
+    uuid_file /var/db/nginx/nginx.id;  # path for FreeBSD
+
+
+
+
+
+
+
+Changing the file content directly should be avoided.
+
+
+
+
+
+
+

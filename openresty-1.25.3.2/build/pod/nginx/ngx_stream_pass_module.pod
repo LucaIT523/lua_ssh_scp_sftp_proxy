@@ -1,0 +1,103 @@
+=encoding utf-8
+
+=head1 NAME
+
+ngx_stream_pass_module - Module ngx_stream_pass_module
+
+
+
+
+=head1
+
+
+
+The C<ngx_stream_pass_module> module (1.25.5) allows
+passing the accepted connection directly to any configured listening socket
+in C<http>, C<stream>, C<mail>,
+and other similar modules.
+
+
+
+
+=head1 Example Configuration
+
+
+
+
+    
+    http {
+        server {
+            listen 8000;
+    
+            location / {
+                root html;
+            }
+        }
+    }
+    
+    stream {
+        server {
+            listen 12345 ssl;
+    
+            ssl_certificate     domain.crt;
+            ssl_certificate_key domain.key;
+    
+            pass 127.0.0.1:8000;
+        }
+    }
+
+
+In the example,
+after terminating SSLE<sol>TLS in the C<stream> module
+the connection is passed to the C<http> module.
+
+
+
+
+=head1 Directives
+
+=head2 pass
+
+
+B<syntax:> pass I<I<C<address>>>
+
+
+
+B<context:> I<server>
+
+
+
+
+
+Sets server address to pass client connection to.
+The address can be specified as an IP address
+and a port:
+
+    
+    pass 127.0.0.1:12345;
+
+
+or as a UNIX-domain socket path:
+
+    
+    pass unix:/tmp/stream.socket;
+
+
+
+
+
+
+
+The address can also be specified using variables:
+
+    
+    pass $upstream;
+
+
+
+
+
+
+
+
+

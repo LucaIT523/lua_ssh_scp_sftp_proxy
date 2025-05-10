@@ -1,0 +1,15 @@
+if ($http_origin = '') {
+	set $http_origin '*';
+}
+
+if ($request_method = OPTIONS) {
+	# Tell client that this pre-flight info is valid for 20 days
+	add_header 'Access-Control-Max-Age' 1728000 always;
+	return 204;
+}
+
+add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+add_header 'Access-Control-Allow-Credentials' 'true' always;
+add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+add_header 'Access-Control-Allow-Headers' 'DNT, Authorization, Origin, Accept, Range, Keep-Alive, User-Agent, Cache-Control, Content-Type, If-Modified-Since, X-CustomHeader, X-Requested-With' always;
+add_header 'Access-Control-Expose-Headers' 'Accept-Ranges, Content-Encoding, Content-Length, Content-Range, Date, ETag' always;
